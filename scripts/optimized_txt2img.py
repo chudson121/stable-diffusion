@@ -37,6 +37,13 @@ device = "cuda"
 parser = argparse.ArgumentParser()
 
 parser.add_argument(
+    "--ckpt",
+    type=str,
+    nargs="?",
+    default="sd-v1-4.ckpt",
+    help="ckpt file"
+)
+parser.add_argument(
     "--prompt",
     type=str,
     nargs="?",
@@ -131,6 +138,18 @@ parser.add_argument(
     type=str,
     help="if specified, load prompts from this file",
 )
+  parser.add_argument(
+        "--config",
+        type=str,
+        default="configs/stable-diffusion/v1-inference.yaml",
+        help="path to config which constructs model",
+    )
+    parser.add_argument(
+        "--ckpt",
+        type=str,
+	    default="sd-v1-4.ckpt",
+        help="path to checkpoint of model",
+    )
 parser.add_argument(
     "--seed",
     type=int,
@@ -154,6 +173,7 @@ opt = parser.parse_args()
 tic = time.time()
 os.makedirs(opt.outdir, exist_ok=True)
 outpath = opt.outdir
+ckptFile = opt.ckpt
 
 sample_path = os.path.join(outpath, "_".join(opt.prompt.split())[:255])
 os.makedirs(sample_path, exist_ok=True)
@@ -161,7 +181,7 @@ base_count = len(os.listdir(sample_path))
 grid_count = len(os.listdir(outpath)) - 1
 seed_everything(opt.seed)
 
-sd = load_model_from_config(f"{ckpt}")
+sd = load_model_from_config(f"{ckptFile}")
 li = []
 lo = []
 for key, value in sd.items():
